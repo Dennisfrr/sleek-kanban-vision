@@ -7,17 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, User, Building, Mail, Phone, DollarSign, AlertCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Plus } from 'lucide-react';
 
 interface AddLeadFormProps {
-  onAddLead?: (lead: Lead) => void;
+  onAddLead: (lead: Lead) => void;
 }
 
 const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     company: '',
@@ -31,36 +28,22 @@ const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.company || !formData.email || !formData.value) {
-      toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     const newLead: Lead = {
-      id: Date.now().toString(),
+      id: Math.random().toString(36).substr(2, 9),
       name: formData.name,
       company: formData.company,
       email: formData.email,
       phone: formData.phone,
-      value: parseFloat(formData.value),
+      value: parseFloat(formData.value) || 0,
       status: 'prospect',
       priority: formData.priority,
       createdAt: new Date(),
       updatedAt: new Date(),
-      notes: formData.notes || undefined
+      notes: formData.notes
     };
 
-    onAddLead?.(newLead);
+    onAddLead(newLead);
     
-    toast({
-      title: "Sucesso!",
-      description: "Novo lead adicionado ao pipeline.",
-    });
-
     // Reset form
     setFormData({
       name: '',
@@ -76,126 +59,109 @@ const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
-          Adicionar Lead
+          Novo Lead
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
-            Adicionar Novo Lead
-          </DialogTitle>
+          <DialogTitle>Adicionar Novo Lead</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name" className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Nome Completo *
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Digite o nome do lead"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="company" className="flex items-center gap-2">
-                  <Building className="w-4 h-4" />
-                  Empresa *
-                </Label>
-                <Input
-                  id="company"
-                  value={formData.company}
-                  onChange={(e) => handleInputChange('company', e.target.value)}
-                  placeholder="Nome da empresa"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="email" className="flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  Email *
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="email@exemplo.com"
-                  required
-                />
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="phone" className="flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  Telefone
-                </Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="(11) 99999-9999"
-                />
-              </div>
-              <div>
-                <Label htmlFor="value" className="flex items-center gap-2">
-                  <DollarSign className="w-4 h-4" />
-                  Valor do Negócio (R$) *
-                </Label>
-                <Input
-                  id="value"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.value}
-                  onChange={(e) => handleInputChange('value', e.target.value)}
-                  placeholder="0.00"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="priority" className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" />
-                  Prioridade
-                </Label>
-                <Select value={formData.priority} onValueChange={(value: Lead['priority']) => handleInputChange('priority', value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Baixa</SelectItem>
-                    <SelectItem value="medium">Média</SelectItem>
-                    <SelectItem value="high">Alta</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="name">Nome *</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              required
+            />
           </div>
+
+          <div>
+            <Label htmlFor="company">Empresa *</Label>
+            <Input
+              id="company"
+              value={formData.company}
+              onChange={(e) => handleInputChange('company', e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="email">Email *</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="phone">Telefone</Label>
+            <Input
+              id="phone"
+              value={formData.phone}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
+              placeholder="(11) 99999-9999"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="value">Valor (R$) *</Label>
+            <Input
+              id="value"
+              type="number"
+              value={formData.value}
+              onChange={(e) => handleInputChange('value', e.target.value)}
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="priority">Prioridade</Label>
+            <Select 
+              value={formData.priority} 
+              onValueChange={(value) => handleInputChange('priority', value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Baixa</SelectItem>
+                <SelectItem value="medium">Média</SelectItem>
+                <SelectItem value="high">Alta</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div>
             <Label htmlFor="notes">Observações</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="Informações adicionais sobre o lead..."
               rows={3}
             />
           </div>
-          <div className="flex justify-end gap-3">
+
+          <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
               Cancelar
             </Button>
