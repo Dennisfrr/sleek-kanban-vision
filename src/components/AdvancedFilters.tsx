@@ -103,7 +103,7 @@ const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os Status</SelectItem>
+              <SelectItem value="all">Todos os Status</SelectItem>
               <SelectItem value="prospect">Prospect</SelectItem>
               <SelectItem value="qualified">Qualificado</SelectItem>
               <SelectItem value="proposal">Proposta</SelectItem>
@@ -118,7 +118,7 @@ const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
               <SelectValue placeholder="Prioridade" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas</SelectItem>
+              <SelectItem value="all">Todas</SelectItem>
               <SelectItem value="high">Alta</SelectItem>
               <SelectItem value="medium">Média</SelectItem>
               <SelectItem value="low">Baixa</SelectItem>
@@ -139,7 +139,7 @@ const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
                   <SelectValue placeholder="Selecionar período" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os períodos</SelectItem>
+                  <SelectItem value="all">Todos os períodos</SelectItem>
                   <SelectItem value="today">Hoje</SelectItem>
                   <SelectItem value="week">Esta semana</SelectItem>
                   <SelectItem value="month">Este mês</SelectItem>
@@ -158,7 +158,7 @@ const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
                   <SelectValue placeholder="Faixa de valor" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os valores</SelectItem>
+                  <SelectItem value="all">Todos os valores</SelectItem>
                   <SelectItem value="0-5000">R$ 0 - R$ 5.000</SelectItem>
                   <SelectItem value="5000-15000">R$ 5.000 - R$ 15.000</SelectItem>
                   <SelectItem value="15000-50000">R$ 15.000 - R$ 50.000</SelectItem>
@@ -177,7 +177,7 @@ const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
                   <SelectValue placeholder="Responsável" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="me">Meus leads</SelectItem>
                   <SelectItem value="unassigned">Não atribuídos</SelectItem>
                   <SelectItem value="team">Equipe</SelectItem>
