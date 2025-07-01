@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Lead } from '@/types/crm';
 import { Button } from '@/components/ui/button';
@@ -10,39 +9,26 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus } from 'lucide-react';
 
 interface AddLeadFormProps {
-  onAddLead: (lead: Lead) => void;
+  onSubmit: (lead: Omit<Lead, 'id' | 'createdAt' | 'updatedAt'>) => void;
 }
 
-const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
+const AddLeadForm = ({ onSubmit }: AddLeadFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     company: '',
     email: '',
     phone: '',
-    value: '',
+    value: 0,
+    status: 'sem-classificacao' as Lead['status'],
     priority: 'medium' as Lead['priority'],
-    notes: ''
+    notes: '',
+    avatar: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const newLead: Lead = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: formData.name,
-      company: formData.company,
-      email: formData.email,
-      phone: formData.phone,
-      value: parseFloat(formData.value) || 0,
-      status: 'prospect',
-      priority: formData.priority,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      notes: formData.notes
-    };
-
-    onAddLead(newLead);
+    onSubmit(formData);
     
     // Reset form
     setFormData({
@@ -50,19 +36,18 @@ const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
       company: '',
       email: '',
       phone: '',
-      value: '',
+      value: 0,
+      status: 'sem-classificacao',
       priority: 'medium',
-      notes: ''
+      notes: '',
+      avatar: ''
     });
     
     setIsOpen(false);
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleChange = (field: string, value: string | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -80,93 +65,128 @@ const AddLeadForm = ({ onAddLead }: AddLeadFormProps) => {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Nome *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="name" className="text-slate-400">Nome *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                required
+                className="bg-slate-800 border-slate-700 text-white"
+                placeholder="Nome completo"
+              />
+            </div>
+            <div>
+              <Label htmlFor="company" className="text-slate-400">Empresa *</Label>
+              <Input
+                id="company"
+                value={formData.company}
+                onChange={(e) => handleChange('company', e.target.value)}
+                required
+                className="bg-slate-800 border-slate-700 text-white"
+                placeholder="Nome da empresa"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="email" className="text-slate-400">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                required
+                className="bg-slate-800 border-slate-700 text-white"
+                placeholder="email@exemplo.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone" className="text-slate-400">Telefone *</Label>
+              <Input
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                required
+                className="bg-slate-800 border-slate-700 text-white"
+                placeholder="(11) 99999-9999"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="value" className="text-slate-400">Valor (R$)</Label>
+              <Input
+                id="value"
+                type="number"
+                value={formData.value}
+                onChange={(e) => handleChange('value', parseFloat(e.target.value) || 0)}
+                className="bg-slate-800 border-slate-700 text-white"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <Label htmlFor="priority" className="text-slate-400">Prioridade</Label>
+              <Select value={formData.priority} onValueChange={(value) => handleChange('priority', value)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700">
+                  <SelectItem value="low">Baixa</SelectItem>
+                  <SelectItem value="medium">Média</SelectItem>
+                  <SelectItem value="high">Alta</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div>
-            <Label htmlFor="company">Empresa *</Label>
-            <Input
-              id="company"
-              value={formData.company}
-              onChange={(e) => handleInputChange('company', e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="phone">Telefone</Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-              placeholder="(11) 99999-9999"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="value">Valor (R$) *</Label>
-            <Input
-              id="value"
-              type="number"
-              value={formData.value}
-              onChange={(e) => handleInputChange('value', e.target.value)}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="priority">Prioridade</Label>
-            <Select 
-              value={formData.priority} 
-              onValueChange={(value) => handleInputChange('priority', value)}
-            >
-              <SelectTrigger>
+            <Label htmlFor="status" className="text-slate-400">Status Inicial</Label>
+            <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
+              <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Baixa</SelectItem>
-                <SelectItem value="medium">Média</SelectItem>
-                <SelectItem value="high">Alta</SelectItem>
+              <SelectContent className="bg-slate-800 border-slate-700">
+                <SelectItem value="sem-classificacao">Sem classificação</SelectItem>
+                <SelectItem value="contato-feito">Contato Feito</SelectItem>
+                <SelectItem value="identificacao-interesse">Identificação de Interesse</SelectItem>
+                <SelectItem value="apresentacao">Apresentação</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="notes">Observações</Label>
-            <Textarea
-              id="notes"
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              rows={3}
+            <Label htmlFor="avatar" className="text-slate-400">URL da Foto (opcional)</Label>
+            <Input
+              id="avatar"
+              value={formData.avatar}
+              onChange={(e) => handleChange('avatar', e.target.value)}
+              className="bg-slate-800 border-slate-700 text-white"
+              placeholder="https://exemplo.com/foto.jpg"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-              Adicionar Lead
+          <div>
+            <Label htmlFor="notes" className="text-slate-400">Observações</Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => handleChange('notes', e.target.value)}
+              className="bg-slate-800 border-slate-700 text-white min-h-20"
+              placeholder="Informações adicionais sobre o contato..."
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              type="submit"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={!formData.name || !formData.company || !formData.email || !formData.phone}
+            >
+              Criar Contato
             </Button>
           </div>
         </form>
