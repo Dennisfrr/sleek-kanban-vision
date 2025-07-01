@@ -1,4 +1,3 @@
-
 export interface Lead {
   id: string;
   name: string;
@@ -6,11 +5,12 @@ export interface Lead {
   email: string;
   phone: string;
   value: number;
-  status: 'prospect' | 'qualified' | 'proposal' | 'negotiation' | 'closed-won' | 'closed-lost';
+  status: 'sem-classificacao' | 'contato-feito' | 'identificacao-interesse' | 'apresentacao';
   createdAt: Date;
   updatedAt: Date;
   notes?: string;
   priority: 'low' | 'medium' | 'high';
+  avatar?: string;
 }
 
 export interface KanbanColumn {
